@@ -1,1 +1,11 @@
 node_modules
+dist
+*.log
+
+# RSA Keys (do not commit private keys!)
+keys/
+
+# Environment variables
+.env
+.env.local
+.env.*.local

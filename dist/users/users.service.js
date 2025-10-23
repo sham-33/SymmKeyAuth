@@ -38,32 +38,43 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsersService = void 0;
 const common_1 = require("@nestjs/common");
+const typeorm_1 = require("@nestjs/typeorm");
+const typeorm_2 = require("typeorm");
+const user_entity_1 = require("./user.entity");
 const bcrypt = __importStar(require("bcrypt"));
 let UsersService = class UsersService {
-    users = [];
-    currentId = 1;
+    usersRepository;
+    constructor(usersRepository) {
+        this.usersRepository = usersRepository;
+    }
     async create(username, password) {
         const hashedPassword = await bcrypt.hash(password, 10);
-        const user = {
-            id: this.currentId++,
+        const user = this.usersRepository.create({
             username,
             password: hashedPassword,
-        };
-        this.users.push(user);
-        return user;
+        });
+        return await this.usersRepository.save(user);
     }
     async findOne(username) {
-        return this.users.find((user) => user.username === username);
+        return (await this.usersRepository.findOne({ where: { username } })) ?? undefined;
     }
     async findById(id) {
-        return this.users.find((user) => user.id === id);
+        return (await this.usersRepository.findOne({ where: { id } })) ?? undefined;
     }
 };
 exports.UsersService = UsersService;
 exports.UsersService = UsersService = __decorate([
-    (0, common_1.Injectable)()
+    (0, common_1.Injectable)(),
+    __param(0, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
+    __metadata("design:paramtypes", [typeorm_2.Repository])
 ], UsersService);
 //# sourceMappingURL=users.service.js.map
